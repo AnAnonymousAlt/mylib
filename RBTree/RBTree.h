@@ -10,3 +10,8 @@ struct treehead {
   struct node *head;
   int count;
 };
+
+struct treenode * getparent(struct treenode *);
+int insert(struct treehead *tree, int);
+int remove(struct treehead *, int);
+int insertbalancer(struct treenode *);
