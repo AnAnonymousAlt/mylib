@@ -1,7 +1,7 @@
 #ifndef TEST_H
 #define TEST_H
 #include <stdio.h>
-#include "test.h"
+#include "RBTree.h"
 struct treenode * getparent(struct treenode *node) {
   return node->parent;
 }
