@@ -16,7 +16,7 @@ struct treenode * getsibling(struct treenode *node) {
 }
 //struct treenode *
 enum rbcolor getcolor(struct treenode *node) {
-  return node->color;
+  return node == NULL ? black : node->color;
 }
 
 // balance tree after insertion
@@ -58,6 +58,14 @@ int insertbalancer (struct treenode *node) {
     if (parent->parent == NULL) {
       head->head = parent;
     }
+    else {
+      if (parent->parent->left == grandparent) {
+        parent->parent->left = parent;
+      }
+      else {
+        parent->parent->right = parent;
+      }
+    }
     return 0;
   }
   else if (grandparent->left == parent && parent->right == node) {
@@ -75,6 +83,14 @@ int insertbalancer (struct treenode *node) {
     if (node->parent == NULL) {
       head->head = node;
     }
+    else {
+      if (node->parent->left == grandparent) {
+        node->parent->left = node;
+      }
+      else {
+        node->parent->right = node;
+      }
+    }
     return 0;
   }
   else if (grandparent->right == parent && parent->right == node) {
@@ -86,6 +102,14 @@ int insertbalancer (struct treenode *node) {
     grandparent->parent = parent;
     if (parent->parent == NULL) {
       head->head = parent;
+    }
+    else {
+      if (parent->parent->left == grandparent) {
+        parent->parent->left = parent;
+      }
+      else {
+        parent->parent->right = parent;
+      }
     }
     return 0;
   }
@@ -103,6 +127,14 @@ int insertbalancer (struct treenode *node) {
     grandparent->parent = node;
     if (node->parent == NULL) {
       head->head = node;
+    }
+    else {
+      if (node->parent->left == grandparent) {
+        node->parent->left = node;
+      }
+      else {
+        node->parent->right = node;
+      }
     }
     return 0;
   }
@@ -152,7 +184,107 @@ int insertnode(struct treehead *tree, int num) {
   
 }
 
-int removenode(struct treehead *tree, int num) {
+struct treenode * searchnode(struct treehead *tree, int num) {
+  if (tree == NULL) {
+    return NULL;
+  }
+  struct treenode * node = tree->head;
+  if (node == NULL) {
+    return NULL;
+  }
+  while (node != NULL) {
+    if (node->key == num) {
+      return node;
+    }
+    else if (node->key > num) {
+      if (node->left != NULL) {
+        node = node->left;
+      }
+      else {
+        return NULL;
+      }
+    }
+    else {
+      if (node->key < num) {
+        if (node->right != NULL) {
+          node = node->right;
+        }
+        else {
+          return NULL;
+        }
+      }
+    }
+  }
+  return NULL;
+}
+
+int deletenode(struct treehead *tree, int num) {
+  head = tree;
+  struct treenode *node, *subnode, *left, *right;
+  struct treenode *parent, *sibling;
+  if ((node = searchnode(tree, num)) == NULL) {
+    return 1;
+  }
+  // head case
+  if (tree->head == node) {
+    tree->count--;
+    tree->head = NULL;
+    free(node);
+    return 0;
+  }
+  if (node->right != NULL) {
+    subnode = node->right;
+    while(subnode->left != NULL) {
+      subnode = subnode->left;
+    }
+    node->key = subnode->key;
+  }
+  else if (node->left != NULL) {
+    subnode = node->left;
+    while(subnode->right != NULL) {
+      subnode = subnode->right;
+    }
+    node->key = subnode->key;
+  }
+  else {
+    subnode = node;
+  }
+  // delete subnode, ignore node
+  node = subnode;
+  if (node->left != NULL) {
+    subnode = node->left;
+  }
+  else {
+    subnode = node->right;
+  }
+  // simple case: either is red
+  if (getcolor(subnode) != getcolor(node)) {
+    // Parent of node
+    if (subnode != NULL) {
+      subnode->parent = node->parent; 
+    }
+    if ((parent = getparent(node)) != NULL) {
+      if (parent->left == node) {
+        parent->left = subnode;
+      }
+      else {
+        parent->right = subnode;
+      }
+      node->parent = NULL;
+    }
+    // no parent: head case
+    else {
+      head->head = subnode;
+    }
+    node->left = NULL;
+    node->right = NULL;
+    free(node);
+    return 0;
+  }
+
+  // double black
+     
+
   return 0;
 }
 

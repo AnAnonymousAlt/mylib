@@ -18,7 +18,7 @@ struct treehead {
 
 struct treenode * getparent(struct treenode *);
 int insertnode(struct treehead *tree, int);
-int removenode(struct treehead *, int);
+int deletenode(struct treehead *, int);
 int insertbalancer(struct treenode *);
 
 #endif

@@ -22,11 +22,15 @@ int main() {
     struct treehead * tree;
     tree = malloc(sizeof(struct treehead *));
     int i;
-    for (i = 0; i < 10; i++) {
+    for (i = 5; i < 10; i++) {
         insertnode(tree, i);    
         printer(tree);
     }
-    printf("\n\nfinal tree: ");
+    for (i = 0; i < 5; i++) {
+        insertnode(tree, i);    
+        printer(tree);
+    }
+    printf("\n\nfinal tree: \t");
     printer(tree);
     return 0;
 }
