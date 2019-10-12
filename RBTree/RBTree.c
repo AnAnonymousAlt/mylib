@@ -1,11 +1,14 @@
-#ifndef TEST_H
-#define TEST_H
-#include <stdio.h>
 #include "RBTree.h"
+
+struct treehead * head;
+
 struct treenode * getparent(struct treenode *node) {
   return node->parent;
 }
 struct treenode * getsibling(struct treenode *node) {
+  if (node->parent == NULL) {
+    return NULL;
+  }
   if (node->parent->left == node) {
     return node->parent->right;
   }
@@ -19,7 +22,14 @@ enum rbcolor getcolor(struct treenode *node) {
 // balance tree after insertion
 // tree head case not include
 int insertbalancer (struct treenode *node) {
-  if (getparent(node) == NULL || getparent(node)->color == black) {
+  if (getparent(node) == NULL) {
+    if (getcolor(node) == red) {
+      node->color = black;
+      return 0;
+    }
+  }
+
+  if (getparent(node)->color == black) {
     return 0;
   }
 
@@ -45,6 +55,9 @@ int insertbalancer (struct treenode *node) {
     // change parent
     parent->parent = grandparent->parent;
     grandparent->parent = parent;
+    if (parent->parent == NULL) {
+      head->head = parent;
+    }
     return 0;
   }
   else if (grandparent->left == parent && parent->right == node) {
@@ -59,18 +72,24 @@ int insertbalancer (struct treenode *node) {
     node->right = grandparent;
     node->parent = grandparent->parent;
     grandparent->parent = node;
+    if (node->parent == NULL) {
+      head->head = node;
+    }
     return 0;
   }
-  else if (grandparent->right == parent && parent->right == newnode) {
+  else if (grandparent->right == parent && parent->right == node) {
     parent->color = black;
     grandparent->color = red;
     grandparent->right = parent->left;
     parent->left = grandparent;
     parent->parent = grandparent->parent;
     grandparent->parent = parent;
+    if (parent->parent == NULL) {
+      head->head = parent;
+    }
     return 0;
   }
-  else if (grandparent->right == parent && parent->left == newnode) {
+  else if (grandparent->right == parent && parent->left == node) {
     parent->left = node->right;
     node->right = parent;
     parent->parent = node;
@@ -82,6 +101,9 @@ int insertbalancer (struct treenode *node) {
     node->left = grandparent;
     node->parent = grandparent->parent;
     grandparent->parent = node;
+    if (node->parent == NULL) {
+      head->head = node;
+    }
     return 0;
   }
   else {
@@ -89,14 +111,15 @@ int insertbalancer (struct treenode *node) {
   }
 }
 
-int insert(struct treehead *tree, int num) {
+int insertnode(struct treehead *tree, int num) {
+  head = tree;
   struct treenode *node, *parent, *sibling, *grandparent, *newnode;
   newnode = malloc(sizeof(struct treenode));
   newnode->parent = NULL;
   newnode->left = NULL;
   newnode->right = NULL;
   newnode->color = red;
-  
+  newnode->key = num;
   // empty tree
   if (tree->count == 0) {
     tree->head = newnode;
@@ -118,7 +141,7 @@ int insert(struct treehead *tree, int num) {
     }
     else {
       if (node->right == NULL) {
-        node->right == newnode;
+        node->right = newnode;
         newnode->parent = node;
         tree->count++;
         return insertbalancer(newnode);
@@ -129,8 +152,7 @@ int insert(struct treehead *tree, int num) {
   
 }
 
-int remove(struct treehead *tree, int num) {
+int removenode(struct treehead *tree, int num) {
   return 0;
 }
 
-#endif
