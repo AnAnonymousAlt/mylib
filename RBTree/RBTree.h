@@ -17,8 +17,28 @@ struct treehead {
 };
 
 struct treenode * getparent(struct treenode *);
-int insertnode(struct treehead *tree, int);
+struct treenode * getsibling(struct treenode *);
+struct treenode * getleftchild(struct treenode *);
+struct treenode * getrightchild(struct treenode *);
+enum rbcolor getcolor(struct treenode *);
+
+int setcolor(struct treenode *, enum rbcolor);
+int setleftchild(struct treenode *, struct treenode *);
+int setrightchild(struct treenode *, struct treenode *);
+int setleftparent(struct treenode *, struct treenode *);
+int setrightparent(struct treenode *, struct treenode *);
+int setparent(struct treenode *, struct treenode *);
+int setkey(struct treenode *, int );
+
+struct treenode * newnode(int);
+int storehead(struct treehead *);
+int restorehead(void);
+
+int insertnode(struct treehead *, int);
 int deletenode(struct treehead *, int);
+
 int insertbalancer(struct treenode *);
 void doubleblack(struct treenode *);
+int leftrotate(struct treenode *, struct treenode *);
+int rightrotate(struct treenode *, struct treenode *);
 #endif

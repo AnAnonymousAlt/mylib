@@ -5,6 +5,12 @@ struct treehead * head;
 struct treenode * getparent(struct treenode *node) {
   return node->parent;
 }
+struct treenode * getleftchild(struct treenode *node) {
+  return node->left;
+}
+struct treenode * getrightchild(struct treenode * node) {
+  return node->right;
+}
 struct treenode * getsibling(struct treenode *node) {
   if (node->parent == NULL) {
     return NULL;
@@ -14,9 +20,66 @@ struct treenode * getsibling(struct treenode *node) {
   }
   else return node->parent->left;
 }
-//struct treenode *
 enum rbcolor getcolor(struct treenode *node) {
   return node == NULL ? black : node->color;
+}
+
+
+
+int setcolor(struct treenode *node, enum rbcolor color) {
+  node->color = color;
+  return 0;
+}
+int setleftchild(struct treenode *parent, struct treenode *node) {
+  parent->left = node;
+  node->parent = parent;
+  return 0;
+}
+int setrightchild(struct treenode *parent, struct treenode *node) {
+  parent->right = node;
+  node->parent = parent;
+  return 0;
+}
+int setparent(struct treenode *node, struct treenode *parent) {
+  node->parent = parent;
+  return 0;
+}
+int setleftparent(struct treenode *node, struct treenode *parent) {
+  setparent(node, parent);
+  setleftchild(parent, node);
+  return 0;
+}
+int setrightparent(struct treenode *node, struct treenode *parent) {
+  setparent(node, parent);
+  setrightchild(parent, node);
+  return 0;
+}
+int setkey(struct treenode *node, int key) {
+  node->key = key;
+  return 0;
+}
+
+int storehead(struct treehead *tree) {
+  head = tree;
+  return 0;
+}
+int restorehead(void) {
+  head = NULL;
+  return 0;
+}
+
+int leftrotate(struct treenode *node, struct treenode *subnode) {
+  setrightparent(getleftchild(node))
+}
+
+struct treenode * newnode(int key) {
+  struct treenode * newnode = malloc(sizeof(struct treenode));
+  setparent(NULL);
+  setleftchild(NULL);
+  setrightchild(NULL);
+  setkey(key);
+  setcolor(red);
+  return newnode;
 }
 
 // balance tree after insertion
@@ -143,7 +206,7 @@ int insertbalancer (struct treenode *node) {
   }
 }
 
-int insertnode(struct treehead *tree, int num) {
+int insertnode(struct treehead *tree, int key) {
   head = tree;
   struct treenode *node, *parent, *sibling, *grandparent, *newnode;
   newnode = malloc(sizeof(struct treenode));

@@ -7,6 +7,7 @@ I have to rewrite whole code to make the leaf node a node rather than a NULL poi
 So, write note is very important. It can save lots of time, instead of waste time.
 RBTree is really a huge proj.
 
+
 TODO:
 Insertion
 Deletion
@@ -16,3 +17,7 @@ Clean code
 
 Goal:
 RBTree
+
+
+Specification:
+-1 indicates leaf
