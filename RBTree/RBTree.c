@@ -221,7 +221,7 @@ struct treenode * searchnode(struct treehead *tree, int num) {
 int deletenode(struct treehead *tree, int num) {
   head = tree;
   struct treenode *node, *subnode, *left, *right;
-  struct treenode *parent, *sibling;
+  struct treenode *parent, *sibling, *nephew;
   if ((node = searchnode(tree, num)) == NULL) {
     return 1;
   }
@@ -283,8 +283,41 @@ int deletenode(struct treehead *tree, int num) {
   }
 
   // double black
-     
+  
+  // db case 1: sibling has red child
+  doubleblack(node);
 
   return 0;
 }
-
+void doubleblack(struct treenode *node) {
+  struct treenode *sibling, *parent, *nephew;
+  sibling = getsibling(node);
+  parent = getparent(node);
+  if (node->left == node->right && node->left == NULL) {
+    if (parent->left == node) {
+      parent->left = NULL;
+      node->parent = NULL;
+      free(node);
+    }
+  }
+  if (getcolor(sibling->right) == red) {
+    if (sibling->parent->right == sibling) {
+      sibling->parent = parent->parent;
+      parent->parent = sibling;
+      parent->right = sibling->left;
+      sibling->left = parent;
+      sibling->right->color = black;
+    }
+  }
+  else if (getcolor(sibling->left) == red) {
+    if (sibling->parent->right == sibling) {
+      nephew = sibling->left;
+      sibling->color = red;
+      nephew->color = black;
+      nephew->parent = parent;
+      nephew->right = sibling;
+      sibling->parent = nephew;
+      sibling->left = NULL;
+    }
+  }
+}

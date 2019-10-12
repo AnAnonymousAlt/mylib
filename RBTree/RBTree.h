@@ -20,5 +20,5 @@ struct treenode * getparent(struct treenode *);
 int insertnode(struct treehead *tree, int);
 int deletenode(struct treehead *, int);
 int insertbalancer(struct treenode *);
-
+void doubleblack(struct treenode *);
 #endif

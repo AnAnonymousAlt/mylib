@@ -1,0 +1,18 @@
+Observation:
+Some condition cannot be met in RBTree
+When deteting node, we see this as two steps:
+    First, exchange a node with this one.
+    Second, delete the exchanged one.
+I have to rewrite whole code to make the leaf node a node rather than a NULL pointer to make recurtion in deletion writable.
+So, write note is very important. It can save lots of time, instead of waste time.
+RBTree is really a huge proj.
+
+TODO:
+Insertion
+Deletion
+Rewrite 
+Clean code 
+
+
+Goal:
+RBTree
