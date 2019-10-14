@@ -10,8 +10,8 @@ void printergo(struct treenode *n) {
         printergo(n->right);
     }
 }
-void printer(struct treehead * tree) {
-    struct treenode *n = tree->head;
+void printer(struct treeroot * tree) {
+    struct treenode *n = tree->root;
     printergo(n);
     printf("\n");
     fflush(stdout);
@@ -19,8 +19,8 @@ void printer(struct treehead * tree) {
 
 
 int main() {
-    struct treehead * tree;
-    tree = malloc(sizeof(struct treehead *));
+    struct treeroot * tree;
+    tree = malloc(sizeof(struct treeroot *));
     int i;
     for (i = 5; i < 10; i++) {
         insertnode(tree, i);    

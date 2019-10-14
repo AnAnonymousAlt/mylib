@@ -1,6 +1,6 @@
 #include "RBTree.h"
 
-struct treehead * head;
+struct treeroot * tree;
 
 struct treenode * getparent(struct treenode *node) {
   return node->parent;
@@ -20,22 +20,36 @@ struct treenode * getsibling(struct treenode *node) {
   }
   else return node->parent->left;
 }
+struct treenode * getroot(void) {
+  return gettree()->root;
+}
+struct treeroot gettree(void) {
+  return tree;
+}
+int gettreecount() {
+  return gettree()->count;
+}
 enum rbcolor getcolor(struct treenode *node) {
   return node == NULL ? black : node->color;
 }
 
-
+bool isleftchild(struct treenode *node, struct treenode *parent) {
+  return (getleftchild(parent) == node);
+}
+bool isleaf(struct treenode *node) {
+  return (node->key == -1);
+}
 
 int setcolor(struct treenode *node, enum rbcolor color) {
   node->color = color;
   return 0;
 }
-int setleftchild(struct treenode *parent, struct treenode *node) {
+int setleftchild(struct treenode *node, struct treenode *parent) {
   parent->left = node;
   node->parent = parent;
   return 0;
 }
-int setrightchild(struct treenode *parent, struct treenode *node) {
+int setrightchild(struct treenode *node, struct treenode *parent) {
   parent->right = node;
   node->parent = parent;
   return 0;
@@ -46,44 +60,81 @@ int setparent(struct treenode *node, struct treenode *parent) {
 }
 int setleftparent(struct treenode *node, struct treenode *parent) {
   setparent(node, parent);
-  setleftchild(parent, node);
+  setleftchild(node, parent);
   return 0;
 }
 int setrightparent(struct treenode *node, struct treenode *parent) {
   setparent(node, parent);
-  setrightchild(parent, node);
+  setrightchild(node, parent);
   return 0;
 }
 int setkey(struct treenode *node, int key) {
   node->key = key;
   return 0;
 }
-
-int storehead(struct treehead *tree) {
-  head = tree;
+int setroot(struct treenode *node) {
+  root->root = node;
   return 0;
 }
-int restorehead(void) {
-  head = NULL;
+int settreecount(int count) {
+  gettree()->count = count;
+  return 0;
+}
+
+int storetree(struct treeroot *_tree) {
+  tree = _tree;
+  return 0;
+}
+int restoretree(void) {
+  tree = NULL;
   return 0;
 }
 
 int leftrotate(struct treenode *node, struct treenode *subnode) {
-  setrightparent(getleftchild(node))
+  setrightparent(getleftchild(subnode), node);
+  if (getparent(node)) {
+    isleftchild(node, getparent(node)) 
+      ? setleftparent(subnode, getparent(node)) 
+      : setrightparent(subnode, getparent(node));
+  }
+  setleftparent(node, subnode);
+  return 0;
 }
 
+int rightrotate(struct treenode *node, struct treenode * subnode) {
+  setleftparent(getrightchild(subnode), node);
+  if (getparent(node)) {
+    isleftchild(node, getparent(node))
+      ? setleftparent(subnode, getparent(node))
+      : setrightparent(subnode, getparent(node));
+  }
+  setrightparent(node, subnode);
+  return 0;
+}
+
+struct treenode * newemptynode() {
+  struct treenode * node = malloc(sizeof(struct treenode));
+  setparent(node, NULL);
+  setleftchild(NULL, node);
+  setrightchild(NULL, node);
+  setkey(node, -1);
+  setcolor(node, black);
+  return node;
+}
 struct treenode * newnode(int key) {
-  struct treenode * newnode = malloc(sizeof(struct treenode));
-  setparent(NULL);
-  setleftchild(NULL);
-  setrightchild(NULL);
-  setkey(key);
-  setcolor(red);
-  return newnode;
+  struct treenode *node, *left, *right;
+  node = newemptynode();
+  left = newemptynode();
+  right = newemptynode();
+  setkey(node, key);
+  setcolor(node, red);
+  setleftparent(left, node);
+  setrightparent(right, node);
+  return node;
 }
 
 // balance tree after insertion
-// tree head case not include
+// tree root case not include
 int insertbalancer (struct treenode *node) {
   if (getparent(node) == NULL) {
     if (getcolor(node) == red) {
@@ -119,7 +170,7 @@ int insertbalancer (struct treenode *node) {
     parent->parent = grandparent->parent;
     grandparent->parent = parent;
     if (parent->parent == NULL) {
-      head->head = parent;
+      root->root = parent;
     }
     else {
       if (parent->parent->left == grandparent) {
@@ -144,7 +195,7 @@ int insertbalancer (struct treenode *node) {
     node->parent = grandparent->parent;
     grandparent->parent = node;
     if (node->parent == NULL) {
-      head->head = node;
+      root->root = node;
     }
     else {
       if (node->parent->left == grandparent) {
@@ -164,7 +215,7 @@ int insertbalancer (struct treenode *node) {
     parent->parent = grandparent->parent;
     grandparent->parent = parent;
     if (parent->parent == NULL) {
-      head->head = parent;
+      root->root = parent;
     }
     else {
       if (parent->parent->left == grandparent) {
@@ -189,7 +240,7 @@ int insertbalancer (struct treenode *node) {
     node->parent = grandparent->parent;
     grandparent->parent = node;
     if (node->parent == NULL) {
-      head->head = node;
+      root->root = node;
     }
     else {
       if (node->parent->left == grandparent) {
@@ -206,24 +257,20 @@ int insertbalancer (struct treenode *node) {
   }
 }
 
-int insertnode(struct treehead *tree, int key) {
-  head = tree;
-  struct treenode *node, *parent, *sibling, *grandparent, *newnode;
-  newnode = malloc(sizeof(struct treenode));
-  newnode->parent = NULL;
-  newnode->left = NULL;
-  newnode->right = NULL;
-  newnode->color = red;
-  newnode->key = num;
+int insertnode(struct treeroot *tree, int key) {
+  storetree(tree);
+  struct treenode *node, *parent, *sibling, *grandparent;
+  
   // empty tree
-  if (tree->count == 0) {
-    tree->head = newnode;
-    newnode->color = black;
-    tree->count = 1;
+  if (!gettreecount()) {
+    node = newnode(key);
+    setroot(node);
+    setcolor(node, black);
+    settreecount(gettreecount() + 1);
     return 0;
   }
   
-  node = tree->head;
+  node = getroot();
   while (node != NULL) {
     if (node->key > num) {
       if (node->left == NULL) {
@@ -247,11 +294,11 @@ int insertnode(struct treehead *tree, int key) {
   
 }
 
-struct treenode * searchnode(struct treehead *tree, int num) {
+struct treenode * searchnode(struct treeroot *tree, int num) {
   if (tree == NULL) {
     return NULL;
   }
-  struct treenode * node = tree->head;
+  struct treenode * node = tree->root;
   if (node == NULL) {
     return NULL;
   }
@@ -281,17 +328,17 @@ struct treenode * searchnode(struct treehead *tree, int num) {
   return NULL;
 }
 
-int deletenode(struct treehead *tree, int num) {
-  head = tree;
+int deletenode(struct treeroot *tree, int num) {
+  root = tree;
   struct treenode *node, *subnode, *left, *right;
   struct treenode *parent, *sibling, *nephew;
   if ((node = searchnode(tree, num)) == NULL) {
     return 1;
   }
-  // head case
-  if (tree->head == node) {
+  // root case
+  if (tree->root == node) {
     tree->count--;
-    tree->head = NULL;
+    tree->root = NULL;
     free(node);
     return 0;
   }
@@ -335,9 +382,9 @@ int deletenode(struct treehead *tree, int num) {
       }
       node->parent = NULL;
     }
-    // no parent: head case
+    // no parent: root case
     else {
-      head->head = subnode;
+      root->root = subnode;
     }
     node->left = NULL;
     node->right = NULL;

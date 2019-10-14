@@ -11,8 +11,8 @@ struct treenode {
   enum rbcolor color;
   int key;
 };
-struct treehead {
-  struct treenode *head;
+struct treeroot {
+  struct treenode *root;
   int count;
 };
 
@@ -20,6 +20,9 @@ struct treenode * getparent(struct treenode *);
 struct treenode * getsibling(struct treenode *);
 struct treenode * getleftchild(struct treenode *);
 struct treenode * getrightchild(struct treenode *);
+struct treenode * getroot(void);
+struct treeroot * gettree()
+int gettreecount();
 enum rbcolor getcolor(struct treenode *);
 
 int setcolor(struct treenode *, enum rbcolor);
@@ -29,13 +32,18 @@ int setleftparent(struct treenode *, struct treenode *);
 int setrightparent(struct treenode *, struct treenode *);
 int setparent(struct treenode *, struct treenode *);
 int setkey(struct treenode *, int );
+int setroot(struct treenode *);
+int settreecount(int);
+
+bool isleftchild(struct treenode *, struct treenode *);
+bool isleaf(struct treenode *);
 
 struct treenode * newnode(int);
-int storehead(struct treehead *);
-int restorehead(void);
+int storetree(struct treeroot *);
+int restoretree(void);
 
-int insertnode(struct treehead *, int);
-int deletenode(struct treehead *, int);
+int insertnode(struct treeroot *, int);
+int deletenode(struct treeroot *, int);
 
 int insertbalancer(struct treenode *);
 void doubleblack(struct treenode *);
